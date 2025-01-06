@@ -2,19 +2,14 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
 
-const USER = process.env.MONGO_USER;
-const PASSWORD = process.env.MONGO_PASSWORD;
-const CLUSTER = process.env.MONGO_CLUSTER;
+const MONGO_CONECTION_STRING = process.env.MONGO_CONECTION_STRING;
 
 async function conectDataBase() {
   mongoose
-    .connect(
-      `mongodb+srv://${USER}:${PASSWORD}@${CLUSTER}/livraria?retryWrites=true&w=majority&appName=Cluster0`,
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }
-    )
+    .connect(MONGO_CONECTION_STRING, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
     .then(() => {
       console.log("Conexão com o MongoDB foi bem-sucedida!");
     })
@@ -22,7 +17,7 @@ async function conectDataBase() {
       console.error("Erro ao conectar ao MongoDB:", error);
     });
 
-    return mongoose.connection;
+  return mongoose.connection;
 }
 
 export default conectDataBase;

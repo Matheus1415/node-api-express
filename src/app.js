@@ -1,5 +1,6 @@
 import express from "express";
 import conectDataBase from "./config/dbConect.js";
+import livro from "./models/Livro.js";
 
 const conexao = await conectDataBase();
 
@@ -14,18 +15,11 @@ conexao.once("open", () => {
 const app = express();
 app.use(express.json());
 
-const livros = [
-  { id: 1, name: "Senhor dos Aneis" },
-  { id: 2, name: "3 Marias" },
-];
-
-app.get("/", (req, res) => {
-  res.status(200).send({ message: "Success" });
-});
-
-app.get("/livros", (req, res) => {
+app.get("/livros", async (req, res) => {
   try {
-    res.status(200).json({ message: "Success", livros: livros });
+    const listaLivro = await livro.find({});
+
+    res.status(200).json({ message: "Success", livros: listaLivro });
   } catch (error) {
     console.error("Erro ao obter os livros:", error);
     res
