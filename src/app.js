@@ -1,6 +1,6 @@
 import express from "express";
 import conectDataBase from "./config/dbConect.js";
-import livro from "./models/Livro.js";
+import routes from "./routers/index.js";
 
 const conexao = await conectDataBase();
 
@@ -13,8 +13,7 @@ conexao.once("open", () => {
 });
 
 const app = express();
-app.use(express.json());
-
+routes(app)
 app.get("/livros", async (req, res) => {
   try {
     const listaLivro = await livro.find({});
