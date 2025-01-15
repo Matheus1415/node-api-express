@@ -1,6 +1,7 @@
 import express from "express";
 import conectDataBase from "./config/dbConect.js";
 import routes from "./routers/index.js";
+import manipuladorDeError from "./middleware/manipuladorDeError.js";
 
 const conexao = await conectDataBase();
 
@@ -14,6 +15,8 @@ conexao.once("open", () => {
 
 const app = express();
 routes(app)
+
+app.use(manipuladorDeError)
 
 
 export default app;

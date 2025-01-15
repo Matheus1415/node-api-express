@@ -1,42 +1,29 @@
+import mongoose from "mongoose";
 import { Autor } from "../models/autor.js";
 import livro from "../models/Livro.js";
 
 class LivroController {
-  static async listarLivros(req, res) {
+  static async listarLivros(req, res, next) {
     try {
       const listaLivro = await livro.find({});
       res.status(200).json({ message: "Success", livros: listaLivro });
     } catch (error) {
-      console.error("Erro ao obter os livros:", error);
-      res
-        .status(500)
-        .json({ message: "Erro interno do servidor", error: error.message });
+      next(error);
     }
   }
 
-  static async cadastrarLivro(req, res) {
+  static async cadastrarLivro(req, res, next) {
     try {
       const { autor, ...dadosLivro } = req.body;
-  
-      if (!mongoose.Types.ObjectId.isValid(autor)) {
-        return res.status(400).json({ message: "ID de autor inválido." });
-      }
-      const autorEncontrado = await Autor.findById(autor);
-      if (!autorEncontrado) {
-        return res.status(404).json({ message: "Autor não encontrado." });
-      }
-  
-      const novoLivro = await Livro.create({ ...dadosLivro, autor });
-  
+      const novoLivro = await livro.create({ ...dadosLivro, autor });
+
       res.status(201).json({ message: "Livro cadastrado", livro: novoLivro });
     } catch (error) {
-      console.error("Erro ao cadastrar o livro: ", error);
-      res.status(500).json({ message: "Erro interno do servidor", error: error.message });
+      next(error);
     }
   }
-  
 
-  static async listarLivroPorId(req, res) {
+  static async listarLivroPorId(req, res, next) {
     try {
       const livroId = req.params.id;
       const listaEncontrado = await livro.findById(livroId);
@@ -49,21 +36,17 @@ class LivroController {
         .status(200)
         .json({ message: "Livro encontrado", livro: listaEncontrado });
     } catch (error) {
-      console.error("Erro ao buscar o livro: ", error);
-      res
-        .status(500)
-        .json({ message: "Erro interno do servidor", error: error.message });
+      next(error);
     }
   }
 
-  static async atualizarLivro(req, res) {
+  static async atualizarLivro(req, res, next) {
     try {
       const livroId = req.params.id;
-      const livroAtualizado = await livro.findByIdAndUpdate(
-        livroId,
-        req.body,
-        { new: true, runValidators: true } 
-      );
+      const livroAtualizado = await livro.findByIdAndUpdate(livroId, req.body, {
+        new: true,
+        runValidators: true,
+      });
 
       if (!livroAtualizado) {
         return res.status(404).json({ message: "Livro não encontrado" });
@@ -73,14 +56,11 @@ class LivroController {
         .status(200)
         .json({ message: "Livro editado", livro: livroAtualizado });
     } catch (error) {
-      console.error("Erro ao editar o livro: ", error);
-      res
-        .status(500)
-        .json({ message: "Erro interno do servidor", error: error.message });
+      next(error);
     }
   }
 
-  static async deletarLivro(req, res) {
+  static async deletarLivro(req, res, next) {
     try {
       const livroId = req.params.id;
       const livroDeletado = await livro.findByIdAndDelete(livroId);
@@ -91,10 +71,7 @@ class LivroController {
 
       res.status(200).json({ message: "Livro deletado", livro: livroDeletado });
     } catch (error) {
-      console.error("Erro ao deletar o livro: ", error);
-      res
-        .status(500)
-        .json({ message: "Erro interno do servidor", error: error.message });
+      next(error);
     }
   }
 }
