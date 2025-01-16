@@ -9,3 +9,4 @@ class BaseError extends Error {
     res.status(this.status).json({ message: this.message });
   }
 }
+export default BaseError;

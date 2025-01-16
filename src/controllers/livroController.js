@@ -16,7 +16,6 @@ class LivroController {
     try {
       const { autor, ...dadosLivro } = req.body;
       const novoLivro = await livro.create({ ...dadosLivro, autor });
-
       res.status(201).json({ message: "Livro cadastrado", livro: novoLivro });
     } catch (error) {
       next(error);
@@ -29,7 +28,7 @@ class LivroController {
       const listaEncontrado = await livro.findById(livroId);
 
       if (!listaEncontrado) {
-        return res.status(404).json({ message: "Livro não encontrado" });
+        return next(new NaoEncontrado("ID do livro não encontrado."));
       }
 
       res
@@ -49,7 +48,7 @@ class LivroController {
       });
 
       if (!livroAtualizado) {
-        return res.status(404).json({ message: "Livro não encontrado" });
+        return next(new NaoEncontrado("ID do livro não encontrado."));
       }
 
       res
@@ -66,7 +65,7 @@ class LivroController {
       const livroDeletado = await livro.findByIdAndDelete(livroId);
 
       if (!livroDeletado) {
-        return res.status(404).json({ message: "Livro não encontrado" });
+        return next(new NaoEncontrado("ID do livro não encontrado."));
       }
 
       res.status(200).json({ message: "Livro deletado", livro: livroDeletado });
