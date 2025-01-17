@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { Autor } from "../models/autor.js";
-import livro from "../models/Livro.js";
+import {livro} from "../models/index.js";
 
 class LivroController {
   static async listarLivros(req, res, next) {
@@ -73,6 +73,24 @@ class LivroController {
       next(error);
     }
   }
+
+  static async listarLivroPorFiltro(req, res, next){
+    try {
+      const { editora, titulo } = req.query;
+      const livroResultado = await livro.find({
+        editora: editora,
+        titulo: titulo,
+      });
+
+      res
+      .status(200)
+      .json({ message: "Livro encontrado", livro: livroResultado });
+
+    } catch (error) {
+      next(error);
+    }
+  }
+
 }
 
 export default LivroController;
