@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { Autor } from "../models/autor.js";
-import {livro} from "../models/index.js";
+import { livro } from "../models/index.js";
 
 class LivroController {
   static async listarLivros(req, res, next) {
@@ -74,23 +74,31 @@ class LivroController {
     }
   }
 
-  static async listarLivroPorFiltro(req, res, next){
+  static async listarLivroPorFiltro(req, res, next) {
     try {
-      const { editora, titulo } = req.query;
-      const livroResultado = await livro.find({
-        editora: editora,
-        titulo: titulo,
-      });
+      const { editora, titulo, minPage, maxPage } = req.query;
+      const busca = {};
+
+      if (editora) busca.editora = { $regex: editora, $options: "i" };
+      if (titulo) busca.titulo = { $regex: titulo, $options: "i" };
+
+      const filtroPaginas = {};
+      if (minPage && !isNaN(minPage)) filtroPaginas.$gte = parseInt(minPage);
+      if (maxPage && !isNaN(maxPage)) filtroPaginas.$lte = parseInt(maxPage);
+
+      if (Object.keys(filtroPaginas).length > 0) {
+        busca.paginas = filtroPaginas;
+      }
+
+      const livroResultado = await livro.find(busca);
 
       res
-      .status(200)
-      .json({ message: "Livro encontrado", livro: livroResultado });
-
+        .status(200)
+        .json({ message: "Livros encontrados", livros: livroResultado });
     } catch (error) {
       next(error);
     }
   }
-
 }
 
 export default LivroController;

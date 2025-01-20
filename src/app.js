@@ -1,24 +1,21 @@
 import express from "express";
-import conectDataBase from "./config/dbConect.js";
-import routes from "./routers/index.js";
-import manipuladorDeError from "./middleware/manipuladorDeError.js";
-import manipulador404 from "./middleware/manipulador404.js";
+import db from "./config/dbConnect.js";
+import manipulador404 from "./middlewares/manipulador404.js";
+import manipuladorDeErros from "./middlewares/manipuladorDeErros.js";
+import routes from "./routes/index.js";
 
-const conexao = await conectDataBase();
-
-conexao.on("error", (error) => {
-  console.error("Erro ao conectar ao MongoDB:", error);
-});
-
-conexao.once("open", () => {
-  console.log("Conectado ao MongoDB!");
+db.on("error", console.log.bind(console, "Erro de conexão"));
+db.once("open", () => {
+  console.log("conexão com o banco feita com sucesso");
 });
 
 const app = express();
-routes(app)
+app.use(express.json());
+routes(app);
 
 app.use(manipulador404);
-app.use(manipuladorDeError)
 
+// eslint-disable-next-line no-unused-vars
+app.use(manipuladorDeErros);
 
 export default app;
